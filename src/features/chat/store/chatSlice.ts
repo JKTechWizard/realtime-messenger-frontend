@@ -30,6 +30,7 @@ const chatSlice = createSlice({
   name: 'chat',
   initialState,
   reducers: {
+    resetChatState: () => initialState,
     receiveMessage: (state, action: PayloadAction<Message>) => {
       const { roomId } = action.payload;
       if (!state.messages[roomId]) state.messages[roomId] = [];
@@ -76,5 +77,6 @@ export const {
   setConnected,
   clearRoomMessages,
   clearError,
+  resetChatState,
 } = chatSlice.actions;
 export default chatSlice.reducer;

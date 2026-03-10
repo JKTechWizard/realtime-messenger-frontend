@@ -50,6 +50,8 @@ const chatroomsSlice = createSlice({
   name: 'chatrooms',
   initialState,
   reducers: {
+    resetChatroomsState: () => initialState,
+
     setCurrentRoom: (state, action: PayloadAction<Chatroom | null>) => {
       state.currentRoom = action.payload;
     },
@@ -95,5 +97,5 @@ const chatroomsSlice = createSlice({
   },
 });
 
-export const { setCurrentRoom, updateRoomLastMessage, clearError } = chatroomsSlice.actions;
+export const { setCurrentRoom, updateRoomLastMessage, clearError, resetChatroomsState, } = chatroomsSlice.actions;
 export default chatroomsSlice.reducer;

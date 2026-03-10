@@ -16,6 +16,7 @@ const ChatroomsPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAppSelector((s) => s.auth);
   const { rooms, currentRoom, loading, error } = useAppSelector((s) => s.chatrooms);
+  const { isConnected } = useAppSelector((s) => s.chat);
   const { joinRoom, leaveRoom } = useSocket();
 
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -116,7 +117,7 @@ const ChatroomsPage: React.FC = () => {
                   <div className="room-avatar" style={{ background: avatarColor }}>
                     {initial}
                   </div>
-                  <span className="room-status-dot online" />
+                  <span className={`room-status-dot ${isConnected ? 'online' : 'offline'}`} />
                 </div>
 
                 {/* Text */}

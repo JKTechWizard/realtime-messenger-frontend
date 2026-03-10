@@ -15,8 +15,8 @@ const TYPING_DEBOUNCE_MS = 1200;
 // Checkmark SVG (double tick like WhatsApp)
 const CheckIcon: React.FC<{ color?: string }> = ({ color = 'currentColor' }) => (
   <svg width="14" height="9" viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M1 4L4.5 7.5L9 2" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M5 4L8.5 7.5L13 2" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M1 4L4.5 7.5L9 2" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M5 4L8.5 7.5L13 2" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
@@ -30,6 +30,7 @@ const ChatPanel: React.FC<Props> = ({ room }) => {
   const typingList = typingUsers[room.roomId] ?? [];
 
   const [inputValue, setInputValue] = useState('');
+  const inputValueRef = useRef('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isTypingRef = useRef(false);
@@ -46,23 +47,28 @@ const ChatPanel: React.FC<Props> = ({ room }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSend = useCallback(() => {
-    const trimmed = inputValue.trim();
+  const handleSend = () => {
+    const trimmed = textareaRef.current?.value.trim() ?? '';
     if (!trimmed) return;
     sendMessage(room.roomId, trimmed);
     setInputValue('');
-    if (textareaRef.current) textareaRef.current.style.height = 'auto';
+    inputValueRef.current = '';
+    if (textareaRef.current) {
+      textareaRef.current.value = '';
+      textareaRef.current.style.height = 'auto';
+    }
     if (isTypingRef.current) { emitStopTyping(room.roomId); isTypingRef.current = false; }
     if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
-  }, [inputValue, room.roomId, sendMessage, emitStopTyping]);
+  };
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
-  }, [handleSend]);
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = e.target;
     setInputValue(value);
+    inputValueRef.current = value;
     const ta = e.target;
     ta.style.height = 'auto';
     ta.style.height = `${Math.min(ta.scrollHeight, 120)}px`;
@@ -119,7 +125,7 @@ const ChatPanel: React.FC<Props> = ({ room }) => {
         {!loading && messages.length === 0 && (
           <div className="chat-empty-messages">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="1.2">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
             <p style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>
               No messages yet — say hello!
@@ -156,7 +162,7 @@ const ChatPanel: React.FC<Props> = ({ room }) => {
         <div className="chat-input-wrapper">
           <button className="chat-action-btn" aria-label="Attach file">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+              <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
             </svg>
           </button>
           <textarea
@@ -171,10 +177,10 @@ const ChatPanel: React.FC<Props> = ({ room }) => {
           <div className="chat-input-actions">
             <button className="chat-action-btn" aria-label="Emoji">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M8 13s1.5 2 4 2 4-2 4-2"/>
-                <line x1="9" y1="9" x2="9.01" y2="9"/>
-                <line x1="15" y1="9" x2="15.01" y2="9"/>
+                <circle cx="12" cy="12" r="10" />
+                <path d="M8 13s1.5 2 4 2 4-2 4-2" />
+                <line x1="9" y1="9" x2="9.01" y2="9" />
+                <line x1="15" y1="9" x2="15.01" y2="9" />
               </svg>
             </button>
             <button
@@ -184,8 +190,8 @@ const ChatPanel: React.FC<Props> = ({ room }) => {
               aria-label="Send message"
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="22" y1="2" x2="11" y2="13"/>
-                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                <line x1="22" y1="2" x2="11" y2="13" />
+                <polygon points="22 2 15 22 11 13 2 9 22 2" />
               </svg>
             </button>
           </div>
@@ -274,8 +280,8 @@ function renderMessageGroups(msgs: Message[], currentUserId: string): React.Reac
                 {isOwn && isLast && (
                   <div className="message-sent-label">
                     <svg width="12" height="8" viewBox="0 0 14 9" fill="none">
-                      <path d="M1 4L4.5 7.5L9 2" stroke="#6c63ff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M5 4L8.5 7.5L13 2" stroke="#6c63ff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M1 4L4.5 7.5L9 2" stroke="#6c63ff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M5 4L8.5 7.5L13 2" stroke="#6c63ff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                     Sent
                   </div>

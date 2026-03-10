@@ -49,6 +49,8 @@ export const useSocket = () => {
       socket.off('user_stopped_typing');
       socket.off('connect');
       socket.off('disconnect');
+      socketService.disconnect();
+      initializedRef.current = false; // ← fix for Issue 1
     };
   }, [token, user, dispatch]);
 

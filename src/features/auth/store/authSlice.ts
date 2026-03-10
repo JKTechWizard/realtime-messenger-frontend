@@ -3,6 +3,8 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { authApi } from '../api/authApi';
 import { AuthState, LoginPayload, SignupPayload } from '../types';
 import logger from '../../../shared/utils/logger';
+import { resetChatState } from '../../chat/store/chatSlice';
+import { resetChatroomsState } from '../../chatrooms/store/chatroomsSlice';
 
 const storedUser = localStorage.getItem('user');
 const storedToken = localStorage.getItem('token');
@@ -43,7 +45,7 @@ export const login = createAsyncThunk('auth/login', async (payload: LoginPayload
   }
 });
 
-export const logout = createAsyncThunk('auth/logout', async () => {
+export const logout = createAsyncThunk('auth/logout', async (_, { dispatch }) => {
   try {
     await authApi.logout();
   } catch (error) {
@@ -51,6 +53,8 @@ export const logout = createAsyncThunk('auth/logout', async () => {
   } finally {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    dispatch(resetChatState());
+    dispatch(resetChatroomsState());
   }
 });
 
