@@ -426,7 +426,8 @@
 
 .chat-input-wrapper {
   display: flex;
-  align-items: flex-end;
+  /* align-items: flex-end; */
+  align-items: center;
   gap: 8px;
   background: #f5f6fa;
   border: 1.5px solid var(--color-border);
@@ -483,14 +484,14 @@
 }
 
 .chat-send-btn {
+  transform: rotate(45deg);
   width: 36px;
   height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-accent);
-  color: #fff;
+  color: var(--color-accent);
   transition: background var(--transition-fast), transform var(--transition-fast);
   box-shadow: 0 2px 8px rgba(108, 99, 255, 0.3);
 }
