@@ -48,6 +48,13 @@ export const validateEmail = (email: string): boolean => {
 };
 
 export const validatePassword = (password: string): string | null => {
-  if (password.length < 8) return 'Password must be at least 8 characters';
+  if (password.trim() === '')
+    return 'Password is required';
+  else if (password.length < 8)
+    return 'Password must be at least 8 characters';
+  else if (!/[A-Z]/.test(password))
+    return 'Password must contain at least one uppercase letter';
+  else if (!/[0-9]/.test(password))
+    return 'Password must contain at least one number';
   return null;
 };

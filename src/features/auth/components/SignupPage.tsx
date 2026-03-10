@@ -65,7 +65,7 @@ const SignupPage: React.FC = () => {
       email: form.email.toLowerCase(),
       password: form.password,
     });
-    if (signup.fulfilled.match(result)) navigate('/chatrooms');
+    console.log('Signup result:', result);
   };
 
   return (

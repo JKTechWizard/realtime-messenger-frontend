@@ -18,7 +18,7 @@ const initialState: AuthState = {
 export const signup = createAsyncThunk('auth/signup', async (payload: SignupPayload, { rejectWithValue }) => {
   try {
     const response = await authApi.signup(payload);
-    localStorage.setItem('token', response.token);
+    localStorage.setItem('token', response?.token);
     localStorage.setItem('user', JSON.stringify(response.user));
     logger.info('User signed up', { userId: response.user.id });
     return response;

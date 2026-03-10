@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { validateEmail } from '../../../shared/utils/helpers';
+import { validateEmail, validatePassword } from '../../../shared/utils/helpers';
 import './Auth.css';
 
 interface FormErrors {
@@ -25,9 +25,13 @@ const LoginPage: React.FC = () => {
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
-    if (!form.email) newErrors.email = 'Email is required';
-    else if (!validateEmail(form.email)) newErrors.email = 'Invalid email address';
-    if (!form.password) newErrors.password = 'Password is required';
+    if (!form.email)
+      newErrors.email = 'Email is required';
+    else if (!validateEmail(form.email))
+      newErrors.email = 'Invalid email address';
+    const pwErr = validatePassword(form.password);
+    if (pwErr) newErrors.password = pwErr;
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -41,8 +45,7 @@ const LoginPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    const result = await login({ email: form.email.toLowerCase(), password: form.password });
-    if (login.fulfilled.match(result)) navigate('/chatrooms');
+    await login({ email: form.email.toLowerCase(), password: form.password });
   };
 
   return (
@@ -51,7 +54,7 @@ const LoginPage: React.FC = () => {
         <div className="auth-logo">
           <div className="auth-logo-icon">
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+              <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
             </svg>
           </div>
           <span className="auth-logo-name">Nexus Chat</span>
