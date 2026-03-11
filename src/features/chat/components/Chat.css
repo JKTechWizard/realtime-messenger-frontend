@@ -478,12 +478,13 @@
   transition: background var(--transition-fast), color var(--transition-fast);
 }
 
-.chat-action-btn:hover {
+/* .chat-action-btn:hover {
   background: #e5e7eb;
   color: var(--color-text-secondary);
-}
+} */
 
 .chat-send-btn {
+  padding-right: 2px;
   transform: rotate(45deg);
   width: 36px;
   height: 36px;
@@ -496,10 +497,10 @@
   box-shadow: 0 2px 8px rgba(108, 99, 255, 0.3);
 }
 
-.chat-send-btn:hover:not(:disabled) {
+/* .chat-send-btn:hover:not(:disabled) {
   background: var(--color-accent-hover);
   transform: scale(1.05);
-}
+} */
 
 .chat-send-btn:disabled {
   opacity: 0.35;

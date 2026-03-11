@@ -4,6 +4,13 @@ import env from '../../config/env';
 
 class SocketService {
   private socket: Socket | null = null;
+  private queue: { event: string; data: unknown }[] = [];
+  private flushQueue(): void {
+    if (!this.queue.length) return;
+    const pending = [...this.queue];
+    this.queue = [];
+    pending.forEach(({ event, data }) => this.socket?.emit(event, data));
+  }
 
   connect(token: string): Socket {
     if (this.socket?.connected) return this.socket;
@@ -18,6 +25,7 @@ class SocketService {
 
     this.socket.on('connect', () => {
       console.info('[Socket] Connected:', this.socket?.id);
+      this.flushQueue();
     });
 
     this.socket.on('disconnect', (reason) => {
@@ -35,7 +43,7 @@ class SocketService {
     if (this.socket) {
       this.socket.disconnect();
       this.socket = null;
-      console.info('[Socket] Manually disconnected');
+      this.queue = [];
     }
   }
 
@@ -44,11 +52,12 @@ class SocketService {
   }
 
   emit<T>(event: string, data: T): void {
-    if (!this.socket?.connected) {
-      console.warn(`[Socket] Cannot emit "${event}" — not connected`);
-      return;
+    if (this.socket?.connected) {
+      this.socket.emit(event, data);
+    } else {
+      console.warn(`[Socket] Not connected — queuing "${event}"`);
+      this.queue.push({ event, data });
     }
-    this.socket.emit(event, data);
   }
 
   on<T>(event: string, handler: (data: T) => void): void {

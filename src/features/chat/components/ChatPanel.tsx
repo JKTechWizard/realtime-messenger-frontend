@@ -1,5 +1,5 @@
 // src/features/chat/components/ChatPanel.tsx
-import React, { useEffect, useRef, useCallback, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store';
 import { fetchMessages } from '../store/chatSlice';
 import { useSocket } from '../hooks/useSocket';
@@ -29,7 +29,7 @@ const ChatPanel: React.FC<Props> = ({ room }) => {
   const messages = allMessages[room.roomId] ?? [];
   const typingList = typingUsers[room.roomId] ?? [];
 
-  const [inputValue, setInputValue] = useState('');
+  const [hasContent, setHasContent] = useState(false);
   const inputValueRef = useRef('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -49,14 +49,14 @@ const ChatPanel: React.FC<Props> = ({ room }) => {
 
   const handleSend = () => {
     const trimmed = textareaRef.current?.value.trim() ?? '';
-    if (!trimmed) return;
+    if (!trimmed || !user) return;
     sendMessage(room.roomId, trimmed);
-    setInputValue('');
-    inputValueRef.current = '';
     if (textareaRef.current) {
       textareaRef.current.value = '';
       textareaRef.current.style.height = 'auto';
+      textareaRef.current.focus();
     }
+    setHasContent(false);
     if (isTypingRef.current) { emitStopTyping(room.roomId); isTypingRef.current = false; }
     if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
   };
@@ -67,8 +67,8 @@ const ChatPanel: React.FC<Props> = ({ room }) => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = e.target;
-    setInputValue(value);
     inputValueRef.current = value;
+    setHasContent(value.trim().length > 0);
     const ta = e.target;
     ta.style.height = 'auto';
     ta.style.height = `${Math.min(ta.scrollHeight, 120)}px`;
@@ -171,7 +171,7 @@ const ChatPanel: React.FC<Props> = ({ room }) => {
             ref={textareaRef}
             className="chat-textarea"
             placeholder="Write your message..."
-            value={inputValue}
+            // value={inputValue}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             rows={1}
@@ -190,7 +190,7 @@ const ChatPanel: React.FC<Props> = ({ room }) => {
             <button
               className="chat-send-btn"
               onClick={handleSend}
-              disabled={!inputValue.trim()}
+              disabled={!hasContent}
               aria-label="Send message"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
